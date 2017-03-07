@@ -45,28 +45,40 @@ public class PullMovieNames {
 	private static long endTime;
 	private static long totalTime;
 	private String fileTitle = "Movie Titles";
-
-	HashMap<Integer, String> movies = new HashMap<Integer, String>();
 	
-	public void sortMovies(String location){
-		HashMap<String, Integer> movies = new HashMap<String, Integer>();
+	/**
+	 * Finds movies and adds their name and year released into a file at location
+	 * @param location String, is the path of the parent folder to be searched
+	 */
+	public void outputInfo(String location, Map<String, Integer> map) {	// format is "Name [extra info] year"
 		File currentFolder = new File(location);
 		File[] allFiles = currentFolder.listFiles();
 
-		for (int i = 0; i < allFiles.length; i++) {
+		for (int i = 0; i < allFiles.length; i++) { // In the middle of changing this to only grab the info and adding it to a map to be 
+//													   sorted and then I need to add a way to write the data to files
 			String extension = allFiles[i].getName().substring(allFiles[i].getName().lastIndexOf('.'), allFiles[i].getName().length());
 			String name = allFiles[i].getName().substring(0, allFiles[i].getName().length() - 9);
 			int year = Integer.parseInt(allFiles[i].getName().substring(name.length() + 1, allFiles[i].getName().length() - 4));
 			if (allFiles[i].isFile() && !extension.equalsIgnoreCase(".db")) {
 				try {
-					movies.put(name, year);
+					map.put(name, year);
 				} catch (Exception e) {
 					System.out.println("Exception");
 				}
 			} else if (allFiles[i].isDirectory()) {
-				outputInfo(allFiles[i].getAbsolutePath());
+				outputInfo(allFiles[i].getAbsolutePath(), map);
 			}
 		}
+	}
+	
+	/**
+	 * Finds movies and adds their name and year released into a map to be sorted and put into a file at location
+	 * @param location String, is the path of the parent folder to be searched
+	 */
+	public void sortMovies(String location){
+
+		HashMap<String, Integer> movies = new HashMap<String, Integer>();
+		outputInfo(location, movies);
 
 		Map<String, Integer> sortedByTitleMovies = sortByKey(movies);
 		for (Entry<String, Integer> entry : sortedByTitleMovies.entrySet()){
@@ -109,35 +121,7 @@ public class PullMovieNames {
         }
         return sortedMap;
     }
-	
-	
-	/**
-	 * Finds movies and adds their name and year released into a file at location
-	 * @param location String, is the path of the parent folder to be searched
-	 */
-	public void outputInfo(String location) {	// format is "Name [extra info] year"
-		File currentFolder = new File(location);
-		File[] allFiles = currentFolder.listFiles();
 
-		for (int i = 0; i < allFiles.length; i++) {
-			String extension = allFiles[i].getName().substring(allFiles[i].getName().lastIndexOf('.'), allFiles[i].getName().length()); // Grabs the extension to find thumb files so they can be ignored
-//			System.out.println("extension = " + extension);
-			if (allFiles[i].isFile() && !extension.equalsIgnoreCase(".db")) { // This is where thumb files get ignored
-				try {
-					String name = allFiles[i].getName().substring(0, allFiles[i].getName().length() - 8);
-//					System.out.println("name = " + name);
-					int year = Integer.parseInt(allFiles[i].getName().substring(name.length(), allFiles[i].getName().length() - 4));
-//					System.out.println("year = " + year);
-					w.write(name + " " + year + "\n");
-				} catch (Exception e) {
-					System.out.println("Exception");
-				}
-			} else if (allFiles[i].isDirectory()) { // If the program finds a folder it will recurse down into the folder to find movies
-				outputInfo(allFiles[i].getAbsolutePath());
-			}
-		}
-	}
-	
 	/**
 	 * 
 	 */
@@ -154,7 +138,7 @@ public class PullMovieNames {
 		OutputStreamWriter osw = new OutputStreamWriter(is);
 		w = new BufferedWriter(osw);
 		
-		outputInfo(fileNameIn);
+//		outputInfo(fileNameIn);
 		sortMovies(fileNameIn);
 		
 		w.close();
