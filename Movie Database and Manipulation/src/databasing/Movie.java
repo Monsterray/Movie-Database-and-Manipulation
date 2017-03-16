@@ -79,19 +79,33 @@ public class Movie {
 			String movieAddress = firstResult.findFirst("<a href>").getAt("href");	// Get the first hyperlink that contains the movie we are looking for
 			
 			
-			userAgent.visit(movieAddress);	//visit the link we found earlier
+			userAgent.visit(movieAddress);//visit a url
 			Element moviePage = userAgent.doc;
 			this.movieRating = new Double(moviePage.findFirst("<span itemprop=\"ratingValue\">").innerText());	// find the rating of the movie on IMDb
 			Element outerPublishDate = moviePage.findFirst("<meta itemprop=\"datePublished\">");
-			System.out.println(outerPublishDate.outerHTML());
-//			this.releaseDate = 
-			
+			String publishHTML = outerPublishDate.outerHTML();
+			releaseDate = publishHTML.substring(publishHTML.length() - 12, publishHTML.length() - 2);
+			Element outerContentRaiting = moviePage.findFirst("<meta itemprop=\"contentRating\">");
+			String content = outerContentRaiting.getAt("content");
+			contentRating = content.substring(content.length() - 1, content.length());
+			Element outerDuration = moviePage.findFirst("<time itemprop=\"duration\">");
+			runTime = outerDuration.innerText().trim();
+			Element outerSummary = moviePage.findFirst("<div class=\"summary_text\">");
+			summary = outerSummary.innerText().trim();
+			Element outerDirector = moviePage.findFirst("<span itemprop=\"director\">");
+			director = outerDirector.innerText().trim();
+			Elements ElementalWriters = moviePage.findEvery("<span itemprop=\"creator\" itemtype=\"http://schema.org/Person\">");
+			writers = new LinkedList<String>();
+			for(Element e : ElementalWriters){
+				writers.add(e.innerText().trim());
+			}
+			Element outerMetascore = moviePage.findFirst("<div class=\"metacriticScore score_favorable titleReviewBarSubItem\">");	// <div class="metacriticScore score_favorable titleReviewBarSubItem">
+			metascore = Integer.parseInt(outerMetascore.innerText().trim());
 			Elements genres = userAgent.doc.findEvery("<span itemprop=\"genre\">");
-			this.movieGenres = new LinkedList<String>();
+			movieGenres = new LinkedList<String>();
 			for(Element e : genres){
-	      		this.movieGenres.add(e.innerText());
+	      		movieGenres.add(e.innerText());
 	      	}
-			
 	    }catch(JauntException e){         //if an HTTP/connection error occurs, handle JauntException.
 	    	System.err.println(e);
 	    }
