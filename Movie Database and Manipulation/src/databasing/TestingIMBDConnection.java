@@ -10,55 +10,55 @@ import java.util.Scanner;
  *
  */
 public class TestingIMBDConnection {
-//	/**
-//	 * The normal title of the movie
-//	 */
-//	private String movieTitle;	// Got it
-//	/**
-//	 * The rating of the movie on IMDb
-//	 */
-//	private double movieRating;	// Got it
-//	/**
-//	 * A list of the genres for this movie
-//	 */
-//	private List<String> movieGenres;	// Got it
-//	/**
-//	 * The content rating assigned by the MPAA
-//	 */
-//	private String contentRating;	// Got it
-//	/**
-//	 * The runtime of the entire movie
-//	 */
-//	private String runTime;	// Got it
-//	/**
-//	 * The date the movie was released (I think this is based on the country 
-//	 * you are in is what will display on the website)
-//	 */
-//	private String releaseDate;	// Got it
-//	/**
-//	 * The picture of the movies poster hosted by amazon
-//	 */
-//	private Image moviePoster;
-//	/**
-//	 * A short summary of the movie
-//	 */
-//	private String summary;	// Got it
-//	/**
-//	 * The director of the movie
-//	 */
-//	private String director;
-//	/**
-//	 * A list of all of the writers (also includes writers of things the movie was based on)
-//	 */
-//	private List<String> writers;
-//	/**
-//	 * The rating/score given by Metacritic
-//	 */
-//	private int metascore;
+/*	*//**
+	 * The normal title of the movie
+	 *//*
+	private String movieTitle;	// Got it
+	*//**
+	 * The rating of the movie on IMDb
+	 *//*
+	private double movieRating;	// Got it
+	*//**
+	 * A list of the genres for this movie
+	 *//*
+	private List<String> movieGenres;	// Got it
+	*//**
+	 * The content rating assigned by the MPAA
+	 *//*
+	private String contentRating;	// Got it
+	*//**
+	 * The runtime of the entire movie
+	 *//*
+	private String runTime;	// Got it
+	*//**
+	 * The date the movie was released (I think this is based on the country 
+	 * you are in is what will display on the website)
+	 *//*
+	private String releaseDate;	// Got it
+	*//**
+	 * The picture of the movies poster hosted by amazon
+	 *//*
+	private Image moviePoster;
+	*//**
+	 * A short summary of the movie
+	 *//*
+	private String summary;	// Got it
+	*//**
+	 * The director of the movie
+	 *//*
+	private String director;
+	*//**
+	 * A list of all of the writers (also includes writers of things the movie was based on)
+	 *//*
+	private List<String> writers;
+	*//**
+	 * The rating/score given by Metacritic
+	 *//*
+	private int metascore;
 	
-//	private static String movieTitlePatched = "12 Years a Slave 2013".replace(" ", "+");
-//	private static String site = "http://www.imdb.com/find?ref_=nv_sr_fn&q=" + movieTitlePatched + "&s=all";	// http://www.imdb.com/find?ref_=nv_sr_fn&q=12+Years+a+Slave+2013&s=all
-
+	private static String movieTitlePatched = "12 Years a Slave 2013".replace(" ", "+");
+	private static String site = "http://www.imdb.com/find?ref_=nv_sr_fn&q=" + movieTitlePatched + "&s=all";	// http://www.imdb.com/find?ref_=nv_sr_fn&q=12+Years+a+Slave+2013&s=all
+*/
 	/**
 	 * @param args
 	 */
@@ -72,7 +72,7 @@ public class TestingIMBDConnection {
 
 	private void run() {
 		Scanner in = new Scanner(System.in);
-		System.out.println("Input file location: ");
+		System.out.println("Type the name of a movie to search: ");
 		String fileNameIn = in.nextLine();
 		Movie movie = new Movie(fileNameIn);
 		for(String s : movie.getMovieGenres()){

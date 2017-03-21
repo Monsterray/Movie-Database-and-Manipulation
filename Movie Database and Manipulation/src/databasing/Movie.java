@@ -71,10 +71,11 @@ public class Movie {
 	 */
 	public Movie(String title){
 		this.movieTitle = title.substring(0, title.length() - 4);
-		title = title.replace(" ", "+");
+		String site = "http://www.imdb.com/find?ref_=nv_sr_fn&q=" + title.replace(" ", "+") + "&s=all";	// http://www.imdb.com/find?ref_=nv_sr_fn&q=12+Years+a+Slave+2013&s=all
+
 		try{
 			UserAgent userAgent = new UserAgent();	//create new userAgent (headless browser).
-			userAgent.visit(title);	//visit a url
+			userAgent.visit(site);	//visit a url
 			Element firstResult = userAgent.doc.findFirst("<tr class=\"findResult odd\">"); // Find the first result on the search page
 			String movieAddress = firstResult.findFirst("<a href>").getAt("href");	// Get the first hyperlink that contains the movie we are looking for
 			
