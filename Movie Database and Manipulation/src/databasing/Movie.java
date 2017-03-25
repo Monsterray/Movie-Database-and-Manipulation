@@ -62,7 +62,7 @@ public class Movie {
 	/**
 	 * The rating/score given by Metacritic
 	 */
-	private int metascore;
+	private String metascore;
 	
 	/**
 	 * This is the main constructor of the class that takes in a String title that is uses on IMDb
@@ -73,7 +73,10 @@ public class Movie {
 	public Movie(String title){
 		this.movieTitle = title; // .substring(0, title.length() - 4)
 		title = title.replace(" ", "+");
+		String title2 = title.replace(" ", "%20");
+			//2%20guns%202013
 		String site = "http://www.imdb.com/find?ref_=nv_sr_fn&q=" + title + "&s=all";
+		String moreResultsSite = "http://www.imdb.com/find?q=" + title2 + "&s=tt&ref_=fn_al_tt_mr";
 		try{
 			UserAgent userAgent = new UserAgent();	//create new userAgent (headless browser).
 			userAgent.visit(site);	//visit the search result page for the title of the movie
@@ -84,12 +87,26 @@ public class Movie {
 			Elements interleaved = interleaveElements(oddResults, evenResults);
 			String movieAddress = null;
 			for(Element e : interleaved){	// Looks for the first result that doesn't include "(TV Series)" or "(TV Episode)"
-				if(!e.innerText().contains("(TV Episode)") || !e.innerText().contains("(TV Series)")){
+				if((!e.innerText().contains("(TV Episode)") || !e.innerText().contains("(TV Series)")) && e.innerText().contains(title.substring(movieTitle.length() - 4, movieTitle.length()))){
 					movieAddress = e.findFirst("<a href>").getAt("href");
 					break;
 				}
 			}
-			
+			if(movieAddress == null){
+				userAgent.visit(moreResultsSite);	//visit the search result page for the title of the movie
+				searchPage = userAgent.doc;
+
+				oddResults = searchPage.findEvery("<tr class=\"findResult odd\">"); // Find all tr's who's class matches "findResult odd"
+				evenResults = searchPage.findEvery("<tr class=\"findResult even\">"); // Find all tr's who's class matches "findResult even"
+				interleaved = interleaveElements(oddResults, evenResults);
+				for(Element e : interleaved){	// Looks for the first result that doesn't include "(TV Series)" or "(TV Episode)"
+					if((!e.innerText().contains("(TV Episode)") || !e.innerText().contains("(TV Series)")) && e.innerText().contains(title.substring(movieTitle.length() - 4, movieTitle.length()))){
+						movieAddress = e.findFirst("<a href>").getAt("href");
+						break;
+					}
+				}
+			}
+
 			userAgent.visit(movieAddress);//visit a url
 			Element moviePage = userAgent.doc;
 			this.movieRating = new Double(moviePage.findFirst("<span itemprop=\"ratingValue\">").innerText());	// Find the rating of the movie on IMDb
@@ -112,19 +129,23 @@ public class Movie {
 			}
 			Element outerMetascore = null;
 			try {
-				outerMetascore = moviePage.findFirst("<div class=\"metacriticScore score_favorable titleReviewBarSubItem\">");	// Find the Metacritic score ( a little harder than previously thought)
+				outerMetascore = moviePage.findFirst("<div class=\"metacriticScore score_favorable titleReviewBarSubItem\">");	// Find the Metacritic favorable score (if it has it)
 			} catch (JauntException je) {
 				try {
-					outerMetascore = moviePage.findFirst("<div class=\"metacriticScore score_mixed titleReviewBarSubItem\">");	// Find the Metacritic score ( a little harder than previously thought)
+					outerMetascore = moviePage.findFirst("<div class=\"metacriticScore score_mixed titleReviewBarSubItem\">");	// Find the Metacritic mixed score (if it has it)
 				} catch (Exception e1) {
 					try {
-						outerMetascore = moviePage.findFirst("<div class=\"metacriticScore score_unfavorable titleReviewBarSubItem\">");
+						outerMetascore = moviePage.findFirst("<div class=\"metacriticScore score_unfavorable titleReviewBarSubItem\">");	// Find the Metacritic unfavorable score (if it has it)
 					} catch (JauntException je2) {
-							
+						outerMetascore = null;
 					}
 				}
 			}
-			metascore = Integer.parseInt(outerMetascore.innerText().trim());
+			if(outerMetascore == null){
+				metascore = "No metacritic score";
+			}else{
+				metascore = outerMetascore.innerText().trim();
+			}
 			Elements genres = userAgent.doc.findEvery("<span itemprop=\"genre\">");
 			movieGenres = new LinkedList<String>();
 			for(Element e : genres){
@@ -218,9 +239,9 @@ public class Movie {
 	}
 
 	/**
-	 * Method that gets the Image 
+	 * Method that gets the Image object of the movie
 	 * 
-	 *	@return The string of the movie or null
+	 *	@return The Image object of the poster for the movie
 	 */
 	public Image getMoviePoster() {
 		return moviePoster;
@@ -258,7 +279,7 @@ public class Movie {
 	 * 
 	 *	@return The string of the movie or null
 	 */
-	public int getMetascore() {
+	public String getMetascore() {
 		return metascore;
 	}
 
