@@ -77,7 +77,8 @@ public class Movie {
 			//2%20guns%202013
 		String site = "http://www.imdb.com/find?ref_=nv_sr_fn&q=" + title + "&s=all";
 		String moreResultsSite = "http://www.imdb.com/find?q=" + title2 + "&s=tt&ref_=fn_al_tt_mr";
-		try{
+		try{	// 	Need to figure out how to like check the percentage of how sililar the titles 
+//					are to the search result to figure out if it is right or not
 			UserAgent userAgent = new UserAgent();	//create new userAgent (headless browser).
 			userAgent.visit(site);	//visit the search result page for the title of the movie
 			Element searchPage = userAgent.doc;
@@ -86,9 +87,13 @@ public class Movie {
 			Elements evenResults = searchPage.findEvery("<tr class=\"findResult even\">"); // Find all tr's who's class matches "findResult even"
 			Elements interleaved = interleaveElements(oddResults, evenResults);
 			String movieAddress = null;
-			for(Element e : interleaved){	// Looks for the first result that doesn't include "(TV Series)" or "(TV Episode)"
-				if((!e.innerText().contains("(TV Episode)") || !e.innerText().contains("(TV Series)")) && e.innerText().contains(title.substring(movieTitle.length() - 4, movieTitle.length()))){
+			for(Element e : interleaved){	// Looks for the first result that doesn't include "(TV Series)" or "(TV Episode)" or "(Video)" and it has to have the same year as the movie title
+				boolean isTVShow = e.innerText().contains("(TV Episode)") || e.innerText().contains("(TV Series)");
+				boolean hasCorrectYear = e.innerText().contains(title.substring(movieTitle.length() - 4, movieTitle.length()));
+				boolean isVideo = e.innerText().contains("(Video)");
+				if(!isTVShow && !isVideo && hasCorrectYear){
 					movieAddress = e.findFirst("<a href>").getAt("href");
+					System.out.println(movieAddress);
 					break;
 				}
 			}
@@ -113,8 +118,18 @@ public class Movie {
 			Element outerPublishDate = moviePage.findFirst("<meta itemprop=\"datePublished\">");
 			String publishHTML = outerPublishDate.outerHTML();
 			releaseDate = publishHTML.substring(publishHTML.length() - 12, publishHTML.length() - 2);
-			Element outerContentRaiting = moviePage.findFirst("<meta itemprop=\"contentRating\">");	// Find the content raiting of the movie
-			String content = outerContentRaiting.getAt("content");
+			Element outerContentRaiting = null;
+			try {
+				outerContentRaiting = moviePage.findFirst("<meta itemprop=\"contentRating\">");
+			} catch (JauntException je) {
+				
+			}
+			String content;
+			if(outerContentRaiting == null){
+				content = "No content rating";
+			}else{
+				content = outerContentRaiting.getAt("content");
+			}
 			contentRating = content.substring(content.length() - 1, content.length());
 			Element outerDuration = moviePage.findFirst("<time itemprop=\"duration\">");	// Find the run time of the movie
 			runTime = outerDuration.innerText().trim();
@@ -133,7 +148,7 @@ public class Movie {
 			} catch (JauntException je) {
 				try {
 					outerMetascore = moviePage.findFirst("<div class=\"metacriticScore score_mixed titleReviewBarSubItem\">");	// Find the Metacritic mixed score (if it has it)
-				} catch (Exception e1) {
+				} catch (JauntException e1) {
 					try {
 						outerMetascore = moviePage.findFirst("<div class=\"metacriticScore score_unfavorable titleReviewBarSubItem\">");	// Find the Metacritic unfavorable score (if it has it)
 					} catch (JauntException je2) {
