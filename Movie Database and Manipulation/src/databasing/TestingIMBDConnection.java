@@ -89,12 +89,16 @@ public class TestingIMBDConnection {
 //		for(String s : movie.getMovieGenres()){
 //			System.out.println(s);
 //		}
-		findMovie(site);
+		Movie m = new Movie("Bad Neighbors 2014");
+		System.out.println(m.getMovieRating());
+//		findMovie("Annabelle 2014");
 		in.close();
 	}
 	
-	public void findMovie(String site){
-		movieTitle = site.substring(0, site.length() - 4);
+	public void findMovie(String title){
+		this.movieTitle = title; // .substring(0, title.length() - 4)
+		title = title.replace(" ", "+");
+		String site = "http://www.imdb.com/find?ref_=nv_sr_fn&q=" + title + "&s=all";
 		try{
 			UserAgent userAgent = new UserAgent();	//create new userAgent (headless browser).
 			userAgent.visit(site);//visit a url
@@ -106,8 +110,9 @@ public class TestingIMBDConnection {
 			String movieAddress = null;
 			System.out.println("\n");
 			System.out.println("Interleaved Test: ");
-			for(Element e : interleaved){	// (TV Series) (TV Episode)
-				if(!e.innerText().contains("(TV Episode)") || !e.innerText().contains("(TV Series)")){
+			for(Element e : interleaved){	// (TV Series) (TV Episode) also need to look for year because imdb is dumb
+				System.out.println("Movie year: " + title.substring(movieTitle.length() - 4, movieTitle.length()));
+				if((!e.innerText().contains("(TV Episode)") || !e.innerText().contains("(TV Series)")) && e.innerText().contains(title.substring(movieTitle.length() - 4, movieTitle.length()))){
 					movieAddress = e.findFirst("<a href>").getAt("href");
 					System.out.print("Address of movie on IMDb:\n");
 					System.out.println(movieAddress);
@@ -151,7 +156,7 @@ public class TestingIMBDConnection {
 			writers = new LinkedList<String>();
 	      	int size = writers.size();
 	      	int counter = 1;
-	      	System.out.println("Writers: \n");
+	      	System.out.println("Writers: ");
 			for(Element e : ElementalWriters){
 				writers.add(e.innerText().trim());
 	      		System.out.print(e.innerText().trim());
@@ -177,7 +182,7 @@ public class TestingIMBDConnection {
 			metascore = Integer.parseInt(outerMetascore.innerText().trim());
 			
 
-	      	System.out.println("\n");
+	      	System.out.println();
 			System.out.println("Metascore : " + metascore);
 			System.out.println("Director : " + director);
 			System.out.println("Summary : " + summary);

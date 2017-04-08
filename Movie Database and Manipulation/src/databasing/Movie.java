@@ -77,7 +77,7 @@ public class Movie {
 			//2%20guns%202013
 		String site = "http://www.imdb.com/find?ref_=nv_sr_fn&q=" + title + "&s=all";
 		String moreResultsSite = "http://www.imdb.com/find?q=" + title2 + "&s=tt&ref_=fn_al_tt_mr";
-		try{	// 	Need to figure out how to like check the percentage of how sililar the titles 
+		try{	// 	Need to figure out how to like check the percentage of how similar the titles 
 //					are to the search result to figure out if it is right or not
 			UserAgent userAgent = new UserAgent();	//create new userAgent (headless browser).
 			userAgent.visit(site);	//visit the search result page for the title of the movie
@@ -90,8 +90,9 @@ public class Movie {
 			for(Element e : interleaved){	// Looks for the first result that doesn't include "(TV Series)" or "(TV Episode)" or "(Video)" and it has to have the same year as the movie title
 				boolean isTVShow = e.innerText().contains("(TV Episode)") || e.innerText().contains("(TV Series)");
 				boolean hasCorrectYear = e.innerText().contains(title.substring(movieTitle.length() - 4, movieTitle.length()));
-				boolean isVideo = e.innerText().contains("(Video)");
-				if(!isTVShow && !isVideo && hasCorrectYear){
+//				boolean isVideo = e.innerText().contains("(Video)");
+//				if(!isTVShow && !isVideo && hasCorrectYear){
+				if(!isTVShow && hasCorrectYear){
 					movieAddress = e.findFirst("<a href>").getAt("href");
 					System.out.println(movieAddress);
 					break;
@@ -170,6 +171,13 @@ public class Movie {
 	    	System.err.println(e);
 	    }
 	}
+	
+//	private int testSimilarity(String ToTest, String ToTestWith){
+//		int percentSimilar = 0;
+//		for(int i = 0; ){
+//			
+//		}
+//	}
 	
 	/**
 	 * <div>Method that takes in two Elements Objects and interleaves the two together starting with the first Elements Object</div>
