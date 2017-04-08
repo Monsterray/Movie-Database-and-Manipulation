@@ -47,6 +47,7 @@ public class TestingIMBDConnection {
 	/**
 	 * The picture of the movies poster hosted by amazon
 	 */
+	@SuppressWarnings("unused")
 	private Image moviePoster;
 	/**
 	 * A short summary of the movie
@@ -66,6 +67,7 @@ public class TestingIMBDConnection {
 	private int metascore;
 	
 	private static String movieTitlePatched = "47 ronin 2013".replace(" ", "+");
+	@SuppressWarnings("unused")
 	private static String site = "http://www.imdb.com/find?ref_=nv_sr_fn&q=" + movieTitlePatched + "&s=all";	// http://www.imdb.com/find?ref_=nv_sr_fn&q=12+Years+a+Slave+2013&s=all
 
 	
